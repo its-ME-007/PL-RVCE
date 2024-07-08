@@ -1,0 +1,208 @@
+// code for gui in java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class DSSCCalculator extends JFrame {
+
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
+
+    public DSSCCalculator() {
+        setTitle("Dye-Sensitized Solar Cell Calculator");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout );
+
+        JPanel menuPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+        JButton jscButton = new JButton("Calculate Photocurrent Density (Jsc)");
+        JButton ffButton = new JButton("Calculate Fill Factor (FF)");
+        JButton efficiencyButton = new JButton("Calculate Power Conversion Efficiency (η)");
+        JButton diffusionButton = new JButton("Calculate Electron Diffusion Length (Ln)");
+
+        jscButton.addActionListener(e -> cardLayout.show(mainPanel, "JSC"));
+        ffButton.addActionListener(e -> cardLayout.show(mainPanel, "FF"));
+        efficiencyButton.addActionListener(e -> cardLayout.show(mainPanel, "Efficiency"));
+        diffusionButton.addActionListener(e -> cardLayout.show(mainPanel, "Diffusion"));
+
+        menuPanel.add(jscButton);
+        menuPanel.add(ffButton);
+        menuPanel.add(efficiencyButton);
+        menuPanel.add(diffusionButton);
+
+        mainPanel.add(createJscPanel(), "JSC");
+        mainPanel.add(createFFPanel(), "FF");
+        mainPanel.add(createEfficiencyPanel(), "Efficiency");
+        mainPanel.add(createDiffusionPanel(), "Diffusion");
+
+        add(menuPanel, BorderLayout.WEST);
+        add(mainPanel, BorderLayout.CENTER);
+
+        cardLayout.show(mainPanel, "JSC");
+    }
+
+    private JPanel createJscPanel() {
+        JPanel panel = new JPanel(new GridLayout(6, 2, 10, 10));
+
+        JLabel phiLabel = new JLabel("Photon Flux (ϕ):");
+        JLabel etaInjLabel = new JLabel("Injection Efficiency (η_inj):");
+        JLabel etaColLabel = new JLabel("Collection Efficiency (η_col):");
+        JLabel I0Label = new JLabel("Incident Light Intensity (I0):");
+        JTextField phiField = new JTextField();
+        JTextField etaInjField = new JTextField();
+        JTextField etaColField = new JTextField();
+        JTextField I0Field = new JTextField();
+        JLabel resultLabel = new JLabel();
+        JButton calculateButton = new JButton("Calculate");
+
+        calculateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double q = 1.602e-19; // Elementary charge
+                    double phi = Double.parseDouble(phiField.getText());
+                    double etaInj = Double.parseDouble(etaInjField.getText());
+                    double etaCol = Double.parseDouble(etaColField.getText());
+                    double I0 = Double.parseDouble(I0Field.getText());
+
+                    double Jsc = q * phi * etaInj * etaCol * I0;
+                    resultLabel.setText("Jsc: " + Jsc + " A/m^2");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(phiLabel);
+        panel.add(phiField);
+        panel.add(etaInjLabel);
+        panel.add(etaInjField);
+        panel.add(etaColLabel);
+        panel.add(etaColField);
+        panel.add(I0Label);
+        panel.add(I0Field);
+        panel.add(calculateButton);
+        panel.add(resultLabel);
+
+        return panel;
+    }
+
+    private JPanel createFFPanel() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+
+        JLabel PmaxLabel = new JLabel("Maximum Power Output (Pmax):");
+        JLabel VocLabel = new JLabel("Open-Circuit Voltage (Voc):");
+        JLabel JscLabel = new JLabel("Short-Circuit Current Density (Jsc):");
+        JTextField PmaxField = new JTextField();
+        JTextField VocField = new JTextField();
+        JTextField JscField = new JTextField();
+        JLabel resultLabel = new JLabel();
+        JButton calculateButton = new JButton("Calculate");
+
+        calculateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double Pmax = Double.parseDouble(PmaxField.getText());
+                    double Voc = Double.parseDouble(VocField.getText());
+                    double Jsc = Double.parseDouble(JscField.getText());
+
+                    double FF = Pmax / (Voc * Jsc);
+                    resultLabel.setText("FF: " + FF);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(PmaxLabel);
+        panel.add(PmaxField);
+        panel.add(VocLabel);
+        panel.add(VocField);
+        panel.add(JscLabel);
+        panel.add(JscField);
+        panel.add(calculateButton);
+        panel.add(resultLabel);
+
+        return panel;
+    }
+
+    private JPanel createEfficiencyPanel() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+
+        JLabel PmaxLabel = new JLabel("Maximum Power Output (Pmax):");
+        JLabel PinLabel = new JLabel("Incident Light Power (Pin):");
+        JTextField PmaxField = new JTextField();
+        JTextField PinField = new JTextField();
+        JLabel resultLabel = new JLabel();
+        JButton calculateButton = new JButton("Calculate");
+
+        calculateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double Pmax = Double.parseDouble(PmaxField.getText());
+                    double Pin = Double.parseDouble(PinField.getText());
+
+                    double eta = (Pmax / Pin) * 100;
+                    resultLabel.setText("Efficiency: " + eta + " %");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(PmaxLabel);
+        panel.add(PmaxField);
+        panel.add(PinLabel);
+        panel.add(PinField);
+        panel.add(calculateButton);
+        panel.add(resultLabel);
+
+        return panel;
+    }
+
+    private JPanel createDiffusionPanel() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+
+        JLabel DnLabel = new JLabel("Electron Diffusion Coefficient (Dn):");
+        JLabel tauNLabel = new JLabel("Electron Lifetime (τn):");
+        JTextField DnField = new JTextField();
+        JTextField tauNField = new JTextField();
+        JLabel resultLabel = new JLabel();
+        JButton calculateButton = new JButton("Calculate");
+
+        calculateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double Dn = Double.parseDouble(DnField.getText());
+                    double tauN = Double.parseDouble(tauNField.getText());
+
+                    double Ln = Math.sqrt(Dn * tauN);
+                    resultLabel.setText("Ln: " + Ln + " m");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(DnLabel);
+        panel.add(DnField);
+        panel.add(tauNLabel);
+        panel.add(tauNField);
+        panel.add(calculateButton);
+        panel.add(resultLabel);
+
+        return panel;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new DSSCCalculator().setVisible(true);
+            }
+        });
+    }
+}
+
